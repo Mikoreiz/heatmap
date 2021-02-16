@@ -5,7 +5,7 @@ const config = require("../../config.json")
 
 router.get("/pickups", async (request, response) => {
     try {  
-        const pickups = require('../../csv/pickups.json')
+        const pickups = require('../../data/data.json')
         
         if (!pickups) {
             return response.status(400).json({ msg: "Nothing to show" })
@@ -23,14 +23,14 @@ router.get("/pickups", async (request, response) => {
 
   router.get("/dropoffs", async (request, response) => {
     try {  
-        const dropoffs = require('../../csv/dropoffs.json')
+        const dropoffs = require('../../data/data.json')
         
         if (!dropoffs) {
             return response.status(400).json({ msg: "Nothing to show" })
         }
 
         response.render("heatmapDropoffs", {
-            dropOffs: dropOffs,
+            dropoffs: dropoffs,
             mapBox: config.development.mapbox_token
         })
     } catch (err) {
