@@ -15,22 +15,23 @@ html
     body(style='overflow-x: hidden')
         div(style='width: auto; height: 100%; margin-left: auto; margin-right: auto; overflow-x: hidden; overflow-y: auto;')
             
-            - var dropoffCircle = []
-            - var customerId = []
+            - var circle = []
 
-            for coordinates in markers 
-                - var dropoffCoor = []
-
-                - dropoffCoor.push(coordinates['dropoffLat'])
-                - dropoffCoor.push(coordinates['dropoffLon'])
-                - dropoffCircle.push(dropoffCoor)
-
-                - customerId.push(coordinates['customerId'])
+            for coordinates in dropoffs 
+                - var coor = []
+                - coor.push(coordinates['dropoffLat'])
+                - coor.push(coordinates['dropoffLon'])
+                - coor.push(1)
+                - circle.push(coor)
 
             //- MAP         
             #map(style='height: 64em; width: 100%')
             script(src='https://unpkg.com/leaflet@1.6.0/dist/leaflet.js', integrity='sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==',
             crossorigin='')
+
+            script
+                include ../Leaflet.heat/src/HeatLayer.js
+                include ../Leaflet.heat/dist/leaflet-heat.js
             
             //- Sets up the map display options
             script.
@@ -48,15 +49,11 @@ html
                 }).addTo(map);
                 map.scrollWheelZoom.disable(); // Prevents the map from moving when scrolling (only allows two finger scroll or mouse click)
             script.
-                var circ = !{JSON.stringify(dropoffCircle)};
-                var id = !{JSON.stringify(customerId)};
-                
-                for (var i = 0; i<circ.length; i++) { 
-                    L.circleMarker(circ[i], {
-                        color: '#87b9ff',
-                        opacity: 0,
-                        fillColor: '#87b9ff',
-                        fillOpacity: 0.05,
-                        radius: 14,
-                    }).addTo(map).bindPopup('<a href=/markers/passenger/' + id[i] + '><h5>' + id[i] + '</h5></a>'); 
-                };
+                var circ = !{JSON.stringify(circle)};
+                L.heatLayer(circ, {radius: 25}).addTo(map)
+            .row.justify-content-center.mt-4.mb-5
+                h3 Filter by Vehicle: &nbsp;&nbsp;
+                select.form-control(type='text' onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);" style="width:6em;")
+                    option(selected='') #{vehicleNumber}
+                    for veh in [...vehNum]
+                        option(value='http://localhost:3000/heatmap/dropoffsAPC/'+veh+'') #{veh}

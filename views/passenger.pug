@@ -12,7 +12,7 @@ html
         link(rel='stylesheet', href='https://unpkg.com/leaflet@1.6.0/dist/leaflet.css', integrity='sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==', crossorigin='')
 
     //- Map and Schedule content
-    body(style='overflow-x: hidden')
+    body
         div(style='width: auto; height: 100%; margin-left: auto; margin-right: auto; overflow-x: hidden; overflow-y: auto;')
 
             //- MAP         
@@ -23,7 +23,7 @@ html
             - var pickupCircle = []
             - var dropoffCircle = []
 
-            for coordinates in info 
+            for coordinates in info
                 - var pickupCoor = []
                 - var dropoffCoor = []
 
@@ -72,3 +72,35 @@ html
                         radius: 14,
                     }).addTo(map); 
                 };
+            script.
+                var latlngs = !{JSON.stringify(pickupCircle)} 
+                var polyline = L.polyline(latlngs, {
+                    color: 'black',
+                    weight: 2.5,
+                    opacity: 0,
+                }).addTo(map);
+                map.fitBounds(polyline.getBounds()) // Fits the map to show the whole path without cutting any parts off
+
+            .container.mt-5.mb-5(style='width:61em; border: solid .5em #f4f4f4; border-radius: .4em')
+                .col.responsive
+                    .row(style='padding: 0')
+                        table.table.table-responsive.table-sm
+                            tr 
+                                thead.table-borderless
+                                    th.font-weight-bold(style='position: sticky; top: 0; font-size: 1.4em; text-align: center') Trip Status
+                                    th.font-weight-bold(style='position: sticky; top: 0; font-size: 1.4em; text-align: center') Pickup Time
+                                    th.font-weight-bold(style='position: sticky; top: 0; font-size: 1.4em; text-align: center') Pickup Address 
+                                    th.font-weight-bold(style='position: sticky; top: 0; font-size: 1.4em; text-align: center') Dropoff Address 
+                            tbody 
+                                for passengerInfo in info
+                                    tr
+                                        - var pickupTime = moment(passengerInfo.reqPickupTime + ":00", "HH:mm:ss")
+                                        - pickupTime = moment(new Date(pickupTime)).format('h:mm a')
+                                        - var status = passengerInfo.tripStatus
+                                        - status = status.charAt(0).toUpperCase() + status.slice(1)
+
+                                        td.table-bordered.font-weight-light(style='font-size: 0.8em; width: 12em; text-align: center') #{status}
+                                        td.table-bordered.font-weight-light(style='font-size: 0.8em; width: 12em; text-align: center') #{pickupTime}
+                                        td.table-bordered.font-weight-light(style='font-size: 0.8em; width: 24em; text-align: center') #{passengerInfo.pickupAddress}, #{passengerInfo.pickupCity} CA, #{passengerInfo.pickupZipcode} 
+                                        td.table-bordered.font-weight-light(style='font-size: 0.8em; width: 24em; text-align: center') #{passengerInfo.dropoffAddress}, #{passengerInfo.dropoffCity} CA, #{passengerInfo.dropoffZipcode} 
+                                        

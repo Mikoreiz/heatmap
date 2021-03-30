@@ -16,6 +16,7 @@ html
         div(style='width: auto; height: 100%; margin-left: auto; margin-right: auto; overflow-x: hidden; overflow-y: auto;')
             
             - var pickupCircle = []
+            - var customerId = []
 
             for coordinates in markers 
                 - var pickupCoor = []
@@ -23,6 +24,8 @@ html
                 - pickupCoor.push(coordinates['pickupLat'])
                 - pickupCoor.push(coordinates['pickupLon'])
                 - pickupCircle.push(pickupCoor)
+
+                - customerId.push(coordinates['customerId'])
 
             //- MAP         
             #map(style='height: 64em; width: 100%')
@@ -46,12 +49,14 @@ html
                 map.scrollWheelZoom.disable(); // Prevents the map from moving when scrolling (only allows two finger scroll or mouse click)
             script.
                 var circ = !{JSON.stringify(pickupCircle)};
-                for (var i = 1; i<circ.length; i++) { 
+                var id = !{JSON.stringify(customerId)};
+                
+                for (var i = 0; i<circ.length; i++) { 
                     L.circleMarker(circ[i], {
                         color: 'orange',
                         opacity: 0,
                         fillColor: 'orange',
                         fillOpacity: 0.05,
                         radius: 14,
-                    }).addTo(map); 
+                    }).addTo(map).bindPopup('<a href=/markers/passenger/' + id[i] + '><h5>' + id[i] + '</h5></a>'); 
                 };

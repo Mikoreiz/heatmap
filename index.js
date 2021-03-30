@@ -6,6 +6,7 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
 app.set("view engine", "pug")
+app.locals.moment = require("moment")
 
 app.use(express.json({ extended: false }))
 
